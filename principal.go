@@ -7,6 +7,8 @@ import (
     "log"
     "net/http"
     "github.com/gorilla/handlers"
+    "io/ioutil"
+    "strings"
 )
 
 type Persona struct {
@@ -20,7 +22,6 @@ type Persona struct {
 
 type Parametros struct {
     Url string
-    Hilos int
     Solicitud  int
 
 }
@@ -76,15 +77,49 @@ func Parametro(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Expose-Headers", "Authorization")
   //w.WriteHeader(http.StatusOK)
     fmt.Fprintf(w, "%+v", http.StatusOK)
-    fmt.Println(p.Parametro.Url)
+  //  fmt.Println(p.Parametro.Url)
   //  fmt.Println(p.Personas)
 
     pFor := p.Parametro.Solicitud
 
-
+    urlL := p.Parametro.Url
     for i := 0; i < pFor; i++ {
-          fmt.Println(p.Personas[i])
+
+        // fmt.Println()
+        employee_1 := p.Personas[i]
+          e, err := json.Marshal(employee_1)
+    if err != nil {
+        fmt.Println(err)
+        return
     }
+  //  fmt.Println(string(e))
+  requestBody := strings.NewReader(string(e))
+  // post some data
+  res, err := http.Post(
+      urlL,
+      "application/json; charset=UTF-8",
+      requestBody,
+  )
+
+  // check for response error
+  if err != nil {
+      log.Fatal( err )
+  }
+
+  // read response data
+  data, _ := ioutil.ReadAll( res.Body )
+
+  // close response body
+  res.Body.Close()
+
+  // print request `Content-Type` header
+  requestContentType := res.Request.Header.Get( "Content-Type" )
+  fmt.Println( "Request content-type:", requestContentType )
+
+  // print response body
+  fmt.Printf( "%s\n", data )
+    }
+
 
 }
 

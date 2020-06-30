@@ -25,7 +25,7 @@ $("#aceptar").on('click', function () {
   var cantidad =  document.getElementById("numero").value;
 
   if(cantidad ==="" || cantidad === "0"){
-    alertify.error("el campo cantidad esta vacio")
+    alertify.error("el campo cantidad no tiene el valor correcto")
   }
 
   else{
@@ -33,20 +33,28 @@ $("#aceptar").on('click', function () {
   var texto   = document.getElementById("myTextArea").value;
   var hilos   = document.getElementById("hilos").value;
   var url   = document.getElementById("balanceador").value;
-
   //console.log(texto);
-    login(cantidad, hilos, url, texto);
+  if(hilos ==="" || hilos === "0" || url ===""){
+    alertify.error("los campos no tiene el valor correcto")
+  }
+  else {
+
+  for(i=0;i<hilos; i++ ){
+
+    login(cantidad, url, texto);
+  }
+}
 }
   //var tam = $.parseJSON(texto).length
 //  console.log(tam);
 
 });
 
-function login(cantidad, hilos, url, texto) {
+function login(cantidad, url, texto) {
 
   //console.log();
 
-    data     = '{"Personas":'+texto+',"Parametro":{"Url": "'+url+'","Hilos" : '+hilos+',"Solicitud": '+cantidad+'}}';
+    data     = '{"Personas":'+texto+',"Parametro":{"Url": "'+url+'","Solicitud": '+cantidad+'}}';
 
     $.ajax({
         type: 'POST',
@@ -58,14 +66,17 @@ function login(cantidad, hilos, url, texto) {
         data: data,
         success: function (data) {
 
-          alert(data);
+        //  alert(data);
+          if(data === 200){
+            alertify.success("Se ejecuto correctamente");
+          }
 
 
 
         },
         error: function(data)
         {
-         console.log(data);
+         alertify.error("Ocurrio un error");
         }
     });
 
